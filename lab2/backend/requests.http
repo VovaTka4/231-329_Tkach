@@ -1,0 +1,42 @@
+@hostname = http://localhost:80/api/
+
+### запрос на Retrieve C(R)UD
+GET http://localhost:80/api/nails/10
+Content-Type: application/json
+
+### запрос Get всего!
+GET http://localhost:80/api/nails/
+Content-Type: application/json
+
+### запрос на Create (C)RUD
+POST http://127.0.0.1:80/api/nails/
+Content-Type: application/json
+
+{
+    "datetime_shipment" : null,
+    "datetime_sending": null,
+    "typename" : "RequestType",
+    "serialNum" : "Request",
+    "material" : "Mythical"
+}
+
+### Запрос на Update CR(U)D
+PUT http://127.0.0.1:80/api/nails/1001
+Content-Type: application/json
+
+{
+    "material" : "sigma"
+}
+
+### Запрос на parical_update CR(U)D
+PATCH http://127.0.0.1:8000/nails/1001
+Content-Type: application/json
+
+{
+    "typename" : "SIGMATYPE",
+    "material" : "Unknown"
+}
+
+### Запрос на destroy CRU(D)
+DELETE http://127.0.0.1:80/api/nails/1999
+Content-Type: application/json

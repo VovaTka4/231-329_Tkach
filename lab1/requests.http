@@ -1,0 +1,46 @@
+@hostname = http://localhost:8000
+
+### запрос на Retrieve C(R)UD
+GET http://127.0.0.1:8000/nails/1
+Content-Type: application/json
+
+### запрос Get всего!
+GET http://127.0.0.1:8000/nails/
+Content-Type: application/json
+
+### запрос на Create (C)RUD
+POST http://127.0.0.1:8000/nails/
+Content-Type: application/json
+
+{
+    "datetime_shipment" : null,
+    "datetime_sending": null,
+    "typename" : "RequestType",
+    "serialNum" : "Request",
+    "material" : "Mythical"
+}
+
+### Запрос на Update CR(U)D
+PUT http://127.0.0.1:8000/nails/1
+Content-Type: application/json
+
+{
+    "datetime_shipment" : "2023-08-19",
+    "datetime_sending": "2024-11-28",
+    "typename" : "TYPEGEN1",
+    "serialNum" : "TYPEGEN",
+    "material" : "TYPEGEN"
+}
+
+### Запрос на parical_update CR(U)D
+PATCH http://127.0.0.1:8000/nails/1001
+Content-Type: application/json
+
+{
+    "typename" : "SIGMATYPE",
+    "material" : "Unknown"
+}
+
+### Запрос на destroy CRU(D)
+DELETE http://127.0.0.1:8000/nails/1002
+Content-Type: application/json

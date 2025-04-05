@@ -1,0 +1,84 @@
+name: lab2-architecture
+
+# описание контейнеров и образов, которые необходимо сделать, выделяемые им ресурсы и взаимосвязи между ними
+
+services:
+
+  nginx-service:
+    container_name: nginx-container
+    restart: unless-stopped
+    image: nginx-image
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+      - 443:443 
+    volumes:
+      - staticfiles-volume:/static
+    depends_on:
+      backend-service:
+        condition: service_started
+
+  backend-service:
+    image: backend-image
+    container_name: backend-container
+    working_dir: /backend
+    ports:
+      - 8000:8000
+    restart: unless-stopped
+    command: >
+      sh -c "
+      gunicorn lab1.wsgi:application --bind 0.0.0.0:8000
+      "
+    volumes:
+      - staticfiles-volume:/staticfiles
+    depends_on:
+      postgres-service: 
+        condition: service_started
+      backend-provision-service:
+        condition: service_completed_successfully
+
+  backend-provision-service:
+    image: backend-image
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend-provision-container
+    restart: no
+    working_dir: /backend
+    environment:
+      DJANGO_SUPERUSER_USERNAME: user1
+      DJANGO_SUPERUSER_PASSWORD: password
+      DJANGO_SUPERUSER_EMAIL: user1@mail.com
+    command: >
+      sh -c "
+      python manage.py migrate --noinput &&
+      python manage.py collectstatic --noinput &&
+      python manage.py gentestdata
+      "
+    # python manage.py gentestdata <- добавил management/commands/gentestdata.py, чтоб можно было так вызывать
+    # python manage.py createsuperuser --noinput && <- в enviroment указываем входные данные, вешаем флаг noinput и команда выполнится и все ок
+    volumes:
+      - staticfiles-volume:/staticfiles
+    depends_on:
+      postgres-service: 
+        condition: service_started
+
+  postgres-service:
+    container_name: postgres-container
+    image: postgres:17-alpine
+    restart: always
+    # environment:
+    #   - name=value
+    env_file:
+      - .env
+    ports:
+      - 1234:5432 # на продакшне не нужны, но пока смотрим для првоерки
+    #   порт на хосте : порт внутри контейнера
+    volumes:
+      - database-volume:/var/lib/postgresql/data
+
+volumes:
+  staticfiles-volume: 
+  database-volume:
